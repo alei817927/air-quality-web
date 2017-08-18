@@ -14,14 +14,20 @@ function initDemoMap(){
         }
     );
 
+    var wmsLayer  = L.tileLayer.wms('http://geo.u396.com:58091/geoserver/wms?', {
+        layers: 'makenv:test'
+    });
+
     var baseLayers = {
         "Satellite": Esri_WorldImagery,
+        "wmsLayer": wmsLayer,
         "Grey Canvas": Esri_DarkGreyCanvas
     };
 
     var map = L.map('map', {
         layers: [ Esri_WorldImagery ]
     });
+
 
     var layerControl = L.control.layers(baseLayers);
     layerControl.addTo(map);
