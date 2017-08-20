@@ -1,8 +1,9 @@
 
 function initDemoMap(){
 
-    var Esri_WorldImagery = L.tileLayer('http://geo.u396.com:58091/geoserver/gwc/service/wmts/{z}/{y}/{x}.jpg', {
-        attribution: 'Esri &mdash; Source: Esri, i-cubed, USDA, USGS'
+    var Esri_WorldImagery = L.tileLayer('http://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {
+        attribution: 'Esri &mdash; Source: Esri, i-cubed, USDA, USGS',
+        subdomains: ["1", "2", "3", "4"]
     });
 
     var Esri_DarkGreyCanvas = L.tileLayer(
