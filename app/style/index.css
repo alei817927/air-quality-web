@@ -1,3 +1,13 @@
+body {
+  margin: 0px;
+}
+
+#map {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: #333;
+}
 .leaflet-control-wind-position {
   background-color: rgba(255, 255, 255, 0.7);
   padding: 0 5px;
