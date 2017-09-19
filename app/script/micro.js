@@ -49,18 +49,51 @@ var µ = function () {
   function proportion(x, low, high) {
     return (µ.clamp(x, low, high) - low) / (high - low);
   }
+
   //----end
   function clearCanvas(canvas) {
     canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
     return canvas;
   }
 
+  /**
+   * @returns {Boolean} true if agent is probably a mobile device. Don't really care if this is accurate.
+   */
+  function isMobile() {
+    return (/android|blackberry|iemobile|ipad|iphone|ipod|opera mini|webos/i.test(navigator.userAgent));
+  }
+
+
+  function ajax(url, callback, responseType) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = responseType === undefined ? 'text' : responseType;
+    xhr.onload = function (e) {
+      if (xhr.readyState === xhr.DONE && xhr.status === 200) {
+        callback(this.response);
+      }
+    };
+    xhr.send();
+  }
+
+  function getJSON(url, callback) {
+    ajax(url, callback, 'json');
+  }
+
+  function getBinary(url, callback) {
+    ajax(url, callback, 'arraybuffer');
+
+  }
+
   return {
+    isMobile: isMobile,
     isValue: isValue,
     floorMod: floorMod,
     segmentedColorScale: segmentedColorScale,
     clearCanvas: clearCanvas,
     proportion: proportion,
     clamp: clamp,
+    getJSON: getJSON,
+    getBinary: getBinary
   };
 }();

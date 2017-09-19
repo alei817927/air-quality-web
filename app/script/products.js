@@ -19,8 +19,7 @@ var products = function () {
         return buildProduct({
           field: "scalar",
           type: "temp",
-          builder: function (file) {
-            var record = file[0];
+          builder: function (record) {
             // console.log(file)
             var data = record.data;
             return {

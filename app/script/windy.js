@@ -1,11 +1,3 @@
-
-/**
- * @returns {Boolean} true if agent is probably a mobile device. Don't really care if this is accurate.
- */
-window.isMobile = function isMobile() {
-  return (/android|blackberry|iemobile|ipad|iphone|ipod|opera mini|webos/i.test(navigator.userAgent)
-  );
-};
 window.Windy = function Windy(params) {
   var VELOCITY_SCALE = 0.005 * (Math.pow(window.devicePixelRatio, 1 / 3) || 1); // scale for wind velocity (completely arbitrary--this value looks nice)
   var MIN_TEMPERATURE_K = 261.15; // step size of particle intensity color scale
@@ -39,14 +31,14 @@ window.Windy = function Windy(params) {
     return [u, v, tmp];
   };
 
-  var createWindBuilder = function createWindBuilder(uComp, vComp, temp) {
+  var createWindBuilder = function createWindBuilder(uComp, vComp) {
     var uData = uComp.data,
       vData = vComp.data;
     return {
       header: uComp.header,
       //recipe: recipeFor("wind-" + uComp.header.surface1Value),
       data: function data(i) {
-        return [uData[i], vData[i], temp.data[i]];
+        return [uData[i], vData[i]];
       },
       interpolate: bilinearInterpolateVector
     };
@@ -74,7 +66,7 @@ window.Windy = function Windy(params) {
       }
     });
 
-    return createWindBuilder(uComp, vComp, temp);
+    return createWindBuilder(uComp, vComp);
   };
 
   var buildGrid = function buildGrid(data, callback) {
@@ -328,7 +320,7 @@ window.Windy = function Windy(params) {
     var buckets;
     var mapArea = (extent.south - extent.north) * (extent.west - extent.east);
     var particleCount = Math.round(bounds.width * bounds.height * PARTICLE_MULTIPLIER * Math.pow(mapArea, 0.24));
-    if (isMobile()) {
+    if (µ.isMobile()) {
       particleCount /= PARTICLE_REDUCTION;
     }
 
