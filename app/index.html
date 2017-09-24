@@ -4,28 +4,74 @@
   <title>Windy</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <link rel="stylesheet" href="http://static.makenv.com/js/leaflet/leaflet-1.0.3/dist/leaflet.css"/>
+  <link rel="stylesheet" href="style/index.css"/>
+  <link rel="stylesheet" href="style/timeline.css"/>
+  <link rel="stylesheet" href="style/index.css"/>
 </head>
 <body>
 
 <div id="map"></div>
-<link rel="stylesheet" href="http://static.makenv.com/js/leaflet/leaflet-1.0.3/dist/leaflet.css"/>
+
+<div class="box" id="timeline">
+  <div id="progressTime_control" onclick="progressTimeControl(this)" title="开始"></div>
+  <div class="progressTime" id="progressTime" style="z-index:9">
+    <div>
+      <p id="startTime" style=" float:left;margin-left:33px;opacity: 0;display: none;"></p>
+      <p  id="endTime" style=" float:right;margin-right:33px;opacity: 0;display: none;"></p>
+    </div>
+    <div class="time_slot">
+      <p>06</p>
+      <p>07</p>
+      <p>08</p>
+      <p>09</p>
+      <p>10</p>
+    </div>
+    <div id="progressTime_concent">
+      <div id="scrollBarBox">
+        <div id="scrollBar">
+          <div id="scroll_Track"></div>
+          <div id="scroll_Thumb"></div>
+        </div>
+      </div>
+      <div class="timecode"></div>
+      <div style="width:90%; margin-left: auto;margin-right: auto;">
+        <div style="width:300px;float:right;margin-right:-110px;margin-top:-8px">
+          <p id="TimeSpeed" style="float:left;margin-right:40px;display:none">×1</p>
+          <p style="float:right" id="scrollBarTxt"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="aqcontrol">
+  <div id="content">
+    <hr style="width: calc(100% - 12px);margin: 5px;border: solid 1px rgba(255,255,255,0.15)">
+    <canvas id="cbc" height="20px" style="margin: 5px;border:1px dotted rgba(255,255,255,0.15)"></canvas>
+  </div>
+  <div id="fonts">
+    <p>温度</p>
+  </div>
+</div>
+
+
+
 <script src="http://static.makenv.com/js/leaflet/leaflet-1.0.3/dist/leaflet.js"></script>
 <!--vendor-->
 <script src="http://static.makenv.com/js/jquery/jquery-2.1.4/dist/jquery.min.js"></script>
 
 <!--wind-js-leaflet-->
-<link rel="stylesheet" href="style/index.css"/>
 
 <script src="script/lib/underscore.js/1.6.0/underscore.js"></script>
 
 <script src="script/products.js"></script>
 <script src="script/micro.js"></script>
 <script src="script/windy.js"></script>
+<script src="script/timeline.js"></script>
 <script src="script/leaflet/WindOverLay.js"></script>
 <script src="script/leaflet/DistributionOverlay.js"></script>
 <!--<script src="script/leaflet/DistributionOverlay.js"></script>-->
 <script src="script/leaflet/TileLayer.Grayscale.js"></script>
-<link rel="stylesheet" href="style/index.css"/>
 <script src="script/index.js"></script>
 
 </body>

@@ -55,7 +55,31 @@ L.DistributionOverlay = L.Layer.extend({
     this._adjustViewport();
     this._updateOpacity();
 
+//////////////
+    var colors = this._product.scale.colors;
+    var c = document.getElementById("cbc");
+    var ctx = c.getContext("2d");
+    var my_gradient = ctx.createLinearGradient(0, 0, c.width, 0);
+    var factor = 1 / (colors.length - 1);
+    for (var i = 0; i < colors.length; i++) {
+      var color = colors[i];
+      var point = color[0];
+      var _color = 'rgb(' + color[1][0] + ',' + color[1][1] + ',' + color[1][2] + ')';
+      var index = i * factor;
+      my_gradient.addColorStop(index, _color);
+    }
+    ctx.fillStyle = my_gradient;
+    ctx.fillRect(0, 0, c.width, c.height);
 
+    ctx.fillStyle = 'white';
+    ctx.font = "10px Verdana";
+    for (var i = 0; i < colors.length; i++) {
+      var x = c.width * i * factor;
+      var value = µ.round(colors[i][0] - 273.15, 1);
+      ctx.fillText(value, x, 15);
+      console.log(i, x, value, c.width)
+    }
+//////////////
   },
   onRemove: function onRemove(map) {
   },
@@ -93,8 +117,8 @@ L.DistributionOverlay = L.Layer.extend({
     var size = map.getSize();
     var viewWidth = size.x, viewHeight = size.y;
 
-    canvas.width = viewWidth ;
-    canvas.height = viewHeight ;
+    canvas.width = viewWidth;
+    canvas.height = viewHeight;
     // canvas.style.width = viewWidth + 'px';
     // canvas.style.height = viewHeight + 'px';
     var ctx = canvas.getContext('2d');
@@ -119,7 +143,7 @@ L.DistributionOverlay = L.Layer.extend({
           imgData.data[imgDataIndex + 1] = color[1];
           imgData.data[imgDataIndex + 2] = color[2];
           imgData.data[imgDataIndex + 3] = color[3];
-        }else{
+        } else {
           console.error('----------------')
         }
       }

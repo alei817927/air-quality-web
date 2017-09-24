@@ -12,6 +12,21 @@ var products = function () {
     }, overrides);
   }
 
+  var colors = {
+    temp: [
+      [193, [37, 4, 42]],
+      [206, [41, 10, 130]],
+      [219, [81, 40, 40]],
+      [233.15, [192, 37, 149]],  // -40 C/F
+      [255.372, [70, 215, 215]],  // 0 F
+      [273.15, [21, 84, 187]],   // 0 C
+      [275.15, [24, 132, 14]],   // just above 0 C
+      [291, [247, 251, 59]],
+      [298, [235, 167, 21]],
+      [311, [230, 71, 39]],
+      [328, [88, 27, 67]]
+    ]
+  };
   var FACTORIES = {
     "temp": {
       matches: _.matches({param: "wind", overlayType: "temp"}),
@@ -40,20 +55,9 @@ var products = function () {
             }
           ],
           scale: {
+            colors: colors.temp,
             bounds: [193, 328],
-            gradient: µ.segmentedColorScale([
-              [193, [37, 4, 42]],
-              [206, [41, 10, 130]],
-              [219, [81, 40, 40]],
-              [233.15, [192, 37, 149]],  // -40 C/F
-              [255.372, [70, 215, 215]],  // 0 F
-              [273.15, [21, 84, 187]],   // 0 C
-              [275.15, [24, 132, 14]],   // just above 0 C
-              [291, [247, 251, 59]],
-              [298, [235, 167, 21]],
-              [311, [230, 71, 39]],
-              [328, [88, 27, 67]]
-            ])
+            gradient: µ.segmentedColorScale(colors.temp)
           }
         });
       }
@@ -108,12 +112,13 @@ var products = function () {
     }
 
     console.log('buildGrid')
+
     function interpolate(λ, φ) {
       var i = µ.floorMod(λ - λ0, 360) / Δλ;  // calculate longitude index in wrapped range [0, 360)
       var j = (φ0 - φ) / Δφ;                 // calculate latitude index in direction +90 to -90
 
-      if(j<0)console.error('j invalid',j);
-      if(i<0)console.error('i invalid',i);
+      if (j < 0) console.error('j invalid', j);
+      if (i < 0) console.error('i invalid', i);
 
       var fi = Math.floor(i), ci = fi + 1;
       var fj = Math.floor(j), cj = fj + 1;

@@ -21,6 +21,7 @@ var µ = function () {
   }
 
   function segmentedColorScale(segments) {
+    console.log(segments, '---')
     var points = [], interpolators = [], ranges = [];
     for (var i = 0; i < segments.length - 1; i++) {
       points.push(segments[i + 1][0]);
@@ -85,6 +86,43 @@ var µ = function () {
 
   }
 
+  function mapControl(mapObj, id, position) {
+    var container = L.DomUtil.get(id);
+    var ControlLayer = L.Control.extend({
+      options: {
+        position: position
+      },
+      initialize: function (options) {
+        L.setOptions(this, options);
+      },
+      onAdd: function (map) {
+        return container;
+      }
+    });
+    var cl = new ControlLayer().addTo(mapObj);
+    L.DomEvent.disableClickPropagation(container);
+    L.DomEvent.on(container, 'mousewheel', L.DomEvent.stopPropagation);
+    return cl;
+  }
+
+  function location(map, onerr) {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        var lat = position.coords.latitude;
+        var lon = position.coords.longitude;
+        map.setView([lat, lon], µ.isMobile() ? 5 : 7);
+      }, function (error) {
+        console.error("浏览器不支持地理定位。", error);
+        onerr(map);
+      });
+    }
+  }
+
+  function round(value, fixed) {
+    var m = Math.pow(10, fixed);
+    return Math.round(value * m) / m;
+  }
+
   return {
     isMobile: isMobile,
     isValue: isValue,
@@ -94,6 +132,9 @@ var µ = function () {
     proportion: proportion,
     clamp: clamp,
     getJSON: getJSON,
-    getBinary: getBinary
+    getBinary: getBinary,
+    mapControl: mapControl,
+    location: location,
+    round:round
   };
 }();
