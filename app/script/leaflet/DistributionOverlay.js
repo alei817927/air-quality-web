@@ -77,7 +77,7 @@ L.DistributionOverlay = L.Layer.extend({
       var x = c.width * i * factor;
       var value = µ.round(colors[i][0] - 273.15, 1);
       ctx.fillText(value, x, 15);
-      console.log(i, x, value, c.width)
+      // console.log(i, x, value, c.width)
     }
 //////////////
   },

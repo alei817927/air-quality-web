@@ -59,7 +59,7 @@ function requestWind(map) {
 function requestTemp(map) {
   µ.getBinary('/backup/demo/data/f000-temp.json.temp.bin', function (response) {
     var data = buildData(response);
-    L.distributionOverlay({opacity: 0.5}, data).addTo(map);
+    L.distributionOverlay({opacity: 1}, data).addTo(map);
   });
 }
 
@@ -85,6 +85,9 @@ $(document).ready(function (e) {
   requestTemp(map);
   µ.mapControl(map, 'timeline', 'bottomleft');
   µ.mapControl(map, 'aqcontrol', 'topleft');
+  // $(":radio").labelauty();
+  $(".to-labelauty").labelauty({ minimum_width: "35px" });
+  // $(".to-labelauty-icon").labelauty({ label: false });
   SetProgressTime(null, "2017/07/29 0:00:00", "2017/08/03 0:00:00");
 });
 $(window).resize(function () {
@@ -92,7 +95,8 @@ $(window).resize(function () {
 });
 
 $(document).mouseup(function (e) {
-  if ($(e.target).parent("#content").length == 0) {
+  var target = $(e.target);
+  if (!target.is("#content") && target.parents("#content").length == 0) {
     $("#content").hide("fast", function () {
       $("#fonts").show();
     });

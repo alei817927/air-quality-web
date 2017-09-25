@@ -34,6 +34,7 @@ var products = function () {
         return buildProduct({
           field: "scalar",
           type: "temp",
+          name: "温度",
           builder: function (record) {
             // console.log(file)
             var data = record.data;

@@ -1,4 +1,11 @@
 {
+  "name": "air-quality-web",
+  "version": "1.0.0",
+  "description": "air quality web project",
+  "scripts": {
+    "start": "webpack"
+  },
+  "author": "zhang",
   "dependencies": {
     "labelauty": "^1.1.3"
   },
