@@ -12,29 +12,28 @@ var products = function () {
     }, overrides);
   }
 
-  var colors = {
-    temp: [
-      [193, [37, 4, 42]],
-      [206, [41, 10, 130]],
-      [219, [81, 40, 40]],
-      [233.15, [192, 37, 149]],  // -40 C/F
-      [255.372, [70, 215, 215]],  // 0 F
-      [273.15, [21, 84, 187]],   // 0 C
-      [275.15, [24, 132, 14]],   // just above 0 C
-      [291, [247, 251, 59]],
-      [298, [235, 167, 21]],
-      [311, [230, 71, 39]],
-      [328, [88, 27, 67]]
-    ]
-  };
+  // var colors = {
+  //   temp: [
+  //     [193, [37, 4, 42]],
+  //     [206, [41, 10, 130]],
+  //     [219, [81, 40, 40]],
+  //     [233.15, [192, 37, 149]],  // -40 C/F
+  //     [255.372, [70, 215, 215]],  // 0 F
+  //     [273.15, [21, 84, 187]],   // 0 C
+  //     [275.15, [24, 132, 14]],   // just above 0 C
+  //     [291, [247, 251, 59]],
+  //     [298, [235, 167, 21]],
+  //     [311, [230, 71, 39]],
+  //     [328, [88, 27, 67]]
+  //   ]
+  // };
   var FACTORIES = {
-    "temp": {
+    "TEMP": {
       matches: _.matches({param: "wind", overlayType: "temp"}),
       create: function (attr) {
         return buildProduct({
           field: "scalar",
           type: "temp",
-          name: "温度",
           builder: function (record) {
             // console.log(file)
             var data = record.data;
@@ -56,9 +55,8 @@ var products = function () {
             }
           ],
           scale: {
-            colors: colors.temp,
             bounds: [193, 328],
-            gradient: µ.segmentedColorScale(colors.temp)
+            gradient: µ.segmentedColorScale(CONFIG.WEATHER.TEMP.colors)
           }
         });
       }

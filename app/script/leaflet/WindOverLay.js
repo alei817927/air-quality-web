@@ -60,7 +60,10 @@ L.WindOverlay = L.Layer.extend({
   drawLayer: function drawLayer() {
     var size = this._map.getSize();
     var bounds = this._map.getBounds();
-    this._windy.start([[0, 0], [size.x, size.y]], size.x, size.y, [[bounds._southWest.lng, bounds._southWest.lat], [bounds._northEast.lng, bounds._northEast.lat]]);
+    var self=this._windy;
+    setTimeout(function () {
+      self.start([[0, 0], [size.x, size.y]], size.x, size.y, [[bounds._southWest.lng, bounds._southWest.lat], [bounds._northEast.lng, bounds._northEast.lat]]);
+    },1000);
   },
   // -- L.DomUtil.setTransform from leaflet 1.0.0 to work on 0.0.7
   _setTransform: function _setTransform(el, offset, scale) {
@@ -76,6 +79,11 @@ L.WindOverlay = L.Layer.extend({
 
     L.DomUtil.setTransform(this._canvas, offset, scale);
   },
+  setData: function (data) {
+    this._data = data;
+    this._windy.update(this._data);
+    this.drawLayer();
+  }
 
   // _clearWind: function _clearWind() {
   //   if (this._windy) this._windy.stop();

@@ -24,10 +24,10 @@ L.DistributionOverlay = L.Layer.extend({
   options: {
     opacity: 1
   },
-  initialize: function (options, data, colors, colorKeys) {
+  initialize: function (options, product, data, colorKeys) {
     L.setOptions(this, options);
+    this._product = product;
     this._data = data;
-    this._colors = colors;
     this._colorKeys = colorKeys;
   },
   onAdd: function (map) {
@@ -40,46 +40,16 @@ L.DistributionOverlay = L.Layer.extend({
       // map.on('zoomanim', this._animateZoom, this);
       // map.on('move', this._adjustViewport, this);
       // map.on('zoomstart', this._adjustViewport, this);
-      map.on('moveend', this._adjustViewport, this);
+      map.on('moveend', this._draw, this);
       // map.on('zoomend', this._adjustViewport, this);
     }
     // var animated = this._map.options.zoomAnimation && L.Browser.any3d;
     // L.DomUtil.addClass(this._canvas, 'leaflet-zoom-' + (animated ? 'animated' : 'hide'));
 
-
-    this._product = products.productsFor('temp');
     // console.log(product);
     this._builder = this._product.build(this._data);
-
-
-    this._adjustViewport();
+    this._draw();
     this._updateOpacity();
-
-//////////////
-    var colors = this._product.scale.colors;
-    var c = document.getElementById("cbc");
-    var ctx = c.getContext("2d");
-    var my_gradient = ctx.createLinearGradient(0, 0, c.width, 0);
-    var factor = 1 / (colors.length - 1);
-    for (var i = 0; i < colors.length; i++) {
-      var color = colors[i];
-      var point = color[0];
-      var _color = 'rgb(' + color[1][0] + ',' + color[1][1] + ',' + color[1][2] + ')';
-      var index = i * factor;
-      my_gradient.addColorStop(index, _color);
-    }
-    ctx.fillStyle = my_gradient;
-    ctx.fillRect(0, 0, c.width, c.height);
-
-    ctx.fillStyle = 'white';
-    ctx.font = "10px Verdana";
-    for (var i = 0; i < colors.length; i++) {
-      var x = c.width * i * factor;
-      var value = µ.round(colors[i][0] - 273.15, 1);
-      ctx.fillText(value, x, 15);
-      // console.log(i, x, value, c.width)
-    }
-//////////////
   },
   onRemove: function onRemove(map) {
   },
@@ -106,7 +76,13 @@ L.DistributionOverlay = L.Layer.extend({
     return left > maxIndex ? maxIndex : left;
   },
   _reset: function () {
-    this._adjustViewport();
+    this._draw();
+  },
+  _draw: function () {
+    var self = this;
+    setTimeout(function () {
+      self._adjustViewport();
+    });
   },
   _adjustViewport: function () {
     var canvas = this._canvas;
@@ -165,8 +141,13 @@ L.DistributionOverlay = L.Layer.extend({
     var canvas = this._canvas;
     L.DomUtil.setOpacity(canvas, this.options.opacity);
   },
+  setData: function (data) {
+    this._data = data;
+    this._builder = this._product.build(this._data);
+    this._draw();
+  }
 
 });
-L.distributionOverlay = function (options, data, colors, colorKeys) {
-  return new L.DistributionOverlay(options, data, colors, colorKeys);
+L.distributionOverlay = function (options, product, data, colorKeys) {
+  return new L.DistributionOverlay(options, product, data, colorKeys);
 };

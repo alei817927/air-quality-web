@@ -35,34 +35,46 @@ function buildData(response) {
   return data;
 }
 
-function requestWind(map) {
+var windLayer = null, bgLayer = null;
+var resourcePath = '/backup/demo/data/';
+
+function requestWind(map, time) {
   var counter = 0;
   var uData = null, vData = null;
 
   function checkAndCombineData() {
     if (uData !== null && vData !== null) {
       var data = [uData, vData];
-      L.windOverlay(data, {}).addTo(map);
+      if (windLayer === null) {
+        windLayer = L.windOverlay(data, {}).addTo(map);
+      } else {
+        windLayer.setData(data);
+      }
     }
   }
 
-  µ.getBinary('/backup/demo/data/f000-wind.json.w-u.bin', function (response) {
+  µ.getBinary(resourcePath + time + '.wu', function (response) {
     uData = buildData(response);
     checkAndCombineData();
   });
-  µ.getBinary('/backup/demo/data/f000-wind.json.w-v.bin', function (response) {
+  µ.getBinary(resourcePath + time + '.wv', function (response) {
     vData = buildData(response);
     checkAndCombineData();
   });
 }
 
-function requestTemp(map) {
-  µ.getBinary('/backup/demo/data/f000-temp.json.temp.bin', function (response) {
+function requestTemp(map, time, product, type) {
+  µ.getBinary(resourcePath + time + '.' + type, function (response) {
     var data = buildData(response);
-    L.distributionOverlay({opacity: 1}, data).addTo(map);
+    if (bgLayer === null) {
+      bgLayer = L.distributionOverlay({opacity: 1}, product, data).addTo(map);
+    } else {
+      bgLayer.setData(data);
+    }
   });
 }
 
+var cb = null;
 
 function resize() {
   if (µ.isMobile()) {
@@ -72,23 +84,37 @@ function resize() {
     $('.progressTime').width(v - 36);
     $('#content').width(v);
   }
-  var cw = $('#content').width()-12;
+  var cw = $('#content').width() - 12;
   $('#cbc').width(cw);
   var cbc = document.getElementById("cbc");
-  cbc.width =cw;
+  cbc.width = cw;
+  if (cb !== null) cb.draw();
 }
 
 $(document).ready(function (e) {
   resize();
   var map = initMap();
-  requestWind(map);
-  requestTemp(map);
+
+  var type = 'TEMP';
+
+  var product = products.productsFor(type);
+
+  cb = colorbar('cbc', CONFIG.WEATHER.TEMP.colors);
+  cb.draw();
   µ.mapControl(map, 'timeline', 'bottomleft');
   µ.mapControl(map, 'aqcontrol', 'topleft');
   // $(":radio").labelauty();
-  $(".to-labelauty").labelauty({ minimum_width: "35px" });
+  $(".to-labelauty").labelauty({minimum_width: "35px"});
   // $(".to-labelauty-icon").labelauty({ label: false });
-  SetProgressTime(null, "2017/07/29 0:00:00", "2017/08/03 0:00:00");
+  var tl = new timeline();
+  var startTime = "2017/09/10 0:00:00", endTime = "2017/09/15 0:00:00";
+  tl.init(startTime, endTime, function (time) {
+    time = time === undefined ?'' : time;
+    requestWind(map, time);
+    requestTemp(map, time, product, type);
+
+  });
+  // SetProgressTime(null, "2017/07/29 0:00:00", "2017/08/03 0:00:00");
 });
 $(window).resize(function () {
   resize();
@@ -96,7 +122,7 @@ $(window).resize(function () {
 
 $(document).mouseup(function (e) {
   var target = $(e.target);
-  if (!target.is("#content") && target.parents("#content").length == 0) {
+  if (!target.is("#content") && target.parents("#content").length === 0) {
     $("#content").hide("fast", function () {
       $("#fonts").show();
     });

@@ -21,7 +21,7 @@ var µ = function () {
   }
 
   function segmentedColorScale(segments) {
-    console.log(segments, '---')
+    // console.log(segments, '---')
     var points = [], interpolators = [], ranges = [];
     for (var i = 0; i < segments.length - 1; i++) {
       points.push(segments[i + 1][0]);
