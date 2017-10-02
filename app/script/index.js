@@ -91,6 +91,7 @@ function resize() {
   if (cb !== null) cb.draw();
 }
 
+var tl;
 $(document).ready(function (e) {
   resize();
   var map = initMap();
@@ -99,17 +100,17 @@ $(document).ready(function (e) {
 
   var product = products.productsFor(type);
 
-  cb = colorbar('cbc', CONFIG.WEATHER.TEMP.colors);
-  cb.draw();
+  cb = colorbar('cbc');
+  cb.draw(CONFIG.WEATHER.TEMP.colors);
   µ.mapControl(map, 'timeline', 'bottomleft');
   µ.mapControl(map, 'aqcontrol', 'topleft');
   // $(":radio").labelauty();
   $(".to-labelauty").labelauty({minimum_width: "35px"});
   // $(".to-labelauty-icon").labelauty({ label: false });
-  var tl = new timeline();
   var startTime = "2017/09/10 0:00:00", endTime = "2017/09/15 0:00:00";
+  tl = new timeline();
   tl.init(startTime, endTime, function (time) {
-    time = time === undefined ?'' : time;
+    time = time === undefined ? '2017091102' : time;
     requestWind(map, time);
     requestTemp(map, time, product, type);
 

@@ -1,10 +1,10 @@
-var colorbar = function (id, colors) {
+var colorbar = function (id) {
   // var colors = this._product.scale.colors;
   // var c = document.getElementById("cbc");
   var canvas = document.getElementById(id);
   var ctx = canvas.getContext("2d");
   return {
-    draw: function () {
+    draw: function (colors) {
       var my_gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
       var factor = 1 / (colors.length - 1);
       var i = 0;

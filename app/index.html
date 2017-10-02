@@ -15,7 +15,7 @@
 <div id="map"></div>
 
 <div class="box" id="timeline">
-  <div id="progressTime_control" onclick="progressTimeControl(this)" title="开始"></div>
+  <div id="progressTime_control" onclick="tl.progressTimeControl(this)" title="开始"></div>
   <div class="progressTime" id="progressTime" style="z-index:9">
     <div>
       <p id="startTime" style=" float:left;margin-left:33px;opacity: 0;display: none;"></p>
@@ -46,11 +46,12 @@
       <div>
         <p style="margin: 0;line-height: 30px;">天气</p>
         <input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="温度" checked/>
+        <input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="雨水"/>
       </div>
 
       <div style="border-top: dotted 1px rgba(255,255,255,0.15);margin: 10px 0;">
         <p style="margin: 0;line-height: 30px">空气质量</p>
-        <input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="PM₂.₅" checked/>
+        <input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="PM₂.₅"/>
         <input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="O₃"/>
         <input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="PM₁₀"/>
         <input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="CO"/>
