@@ -63,7 +63,7 @@ function requestWind(map, time) {
   });
 }
 
-function requestTemp(map, time, product, type) {
+function requestBackgroundData(map, time, product, type) {
   µ.getBinary(resourcePath + time + '.' + type, function (response) {
     var data = buildData(response);
     if (bgLayer === null) {
@@ -82,26 +82,41 @@ function resize() {
     v = v - 20;
     $('.box').width(v);
     $('.progressTime').width(v - 36);
-    $('#content').width(v);
+    $('#content').width(v - 10);
   }
-  var cw = $('#content').width() - 12;
+  var cw = $('#content').width() - 2;
   $('#cbc').width(cw);
   var cbc = document.getElementById("cbc");
   cbc.width = cw;
   if (cb !== null) cb.draw();
 }
 
-var tl;
+var tl, currentTime;
+
+function initOptions() {
+  var _products = {};
+  for (var key in CONFIG.PRODUCTS) {
+    var v = CONFIG.PRODUCTS[key];
+    if (_products[v['type']] === undefined) {
+      _products[v['type']] = '';
+    }
+    v.key = key;
+    v.product = products.productsFor(key);
+    _products[v['type']] += '<input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="' + v.name + '" product="' + key + '"/>';
+  }
+  var weather = 'weather', aq = 'aq';
+  $('#' + weather).html(_products[weather]);
+  $('#' + aq).html(_products[aq]);
+}
+
 $(document).ready(function (e) {
+  initOptions();
   resize();
   var map = initMap();
-
-  var type = 'TEMP';
-
-  var product = products.productsFor(type);
-
+  var type = CONFIG.selected;
+  var product = CONFIG.PRODUCTS[type].product;
   cb = colorbar('cbc');
-  cb.draw(CONFIG.WEATHER.TEMP.colors);
+  cb.draw(CONFIG.PRODUCTS.TEMP.colors);
   µ.mapControl(map, 'timeline', 'bottomleft');
   µ.mapControl(map, 'aqcontrol', 'topleft');
   // $(":radio").labelauty();
@@ -110,10 +125,15 @@ $(document).ready(function (e) {
   var startTime = "2017/09/10 0:00:00", endTime = "2017/09/15 0:00:00";
   tl = new timeline();
   tl.init(startTime, endTime, function (time) {
-    time = time === undefined ? '2017091102' : time;
-    requestWind(map, time);
-    requestTemp(map, time, product, type);
+    currentTime = time === undefined ? '2017091102' : time;
+    requestWind(map, currentTime);
+    requestBackgroundData(map, currentTime, product, type);
 
+  });
+  $("input[name=rd1]").click(function (event) {
+    var type = event.target.attributes.product.value;
+    var product = CONFIG.PRODUCTS[type].product;
+    requestBackgroundData(map, currentTime, product, type);
   });
   // SetProgressTime(null, "2017/07/29 0:00:00", "2017/08/03 0:00:00");
 });

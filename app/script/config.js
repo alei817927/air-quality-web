@@ -1,8 +1,9 @@
 var CONFIG = {
-  WEATHER: {
+  PRODUCTS: {
     TEMP: {
       name: '温度',
       unit: '°C',
+      type: 'weather',
       colors: [
         [193, [37, 4, 42]],
         [206, [41, 10, 130]],
@@ -16,38 +17,43 @@ var CONFIG = {
         [311, [230, 71, 39]],
         [328, [88, 27, 67]]
       ]
-    }
-  },
-  AQ: {
+    },
     PM25: {
       name: 'PM₂.₅',
       unit: 'μg/m³',
+      type: 'aq',
       colors: []
     },
     O3: {
       name: 'O₃',
       unit: 'μg/m³',
+      type: 'aq',
       colors: []
     },
     PM10: {
       name: 'PM₁₀',
       unit: 'μg/m³',
+      type: 'aq',
       colors: []
     },
     SO2: {
       name: 'SO₂',
       unit: 'μg/m³',
+      type: 'aq',
       colors: []
     },
     NO2: {
       name: 'NO₂',
       unit: 'μg/m³',
+      type: 'aq',
       colors: []
     },
     CO: {
       name: 'CO',
       unit: 'mg/m³',
+      type: 'aq',
       colors: []
     }
-  }
+  },
+  selected: 'TEMP'
 };

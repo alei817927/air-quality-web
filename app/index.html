@@ -42,22 +42,28 @@
 </div>
 <div id="aqcontrol">
   <div id="content">
-    <div style="width: calc(100% - 12px);margin:0 5px;padding-top:5px;">
+    <div style="width: 100%;margin:0;">
       <div>
         <p style="margin: 0;line-height: 30px;">天气</p>
-        <input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="温度" checked/>
-        <input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="雨水"/>
+        <div id="weather">
+          <input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="温度" checked/>
+          <input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="雨水"/>
+        </div>
       </div>
 
       <div style="border-top: dotted 1px rgba(255,255,255,0.15);margin: 10px 0;">
         <p style="margin: 0;line-height: 30px">空气质量</p>
-        <input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="PM₂.₅"/>
-        <input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="O₃"/>
-        <input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="PM₁₀"/>
-        <input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="CO"/>
+        <div id="aq">
+          <input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="PM₂.₅"/>
+          <input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="O₃"/>
+          <input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="PM₁₀"/>
+          <input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="CO"/>
+          <input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="PM₂.₅"/>
+          <input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="PM₂.₅"/>
+        </div>
       </div>
     </div>
-    <div style="width: calc(100% - 12px);margin:0 5px;border-top: solid 1px rgba(255,255,255,0.15)">
+    <div style="width: 100%;margin:0;border-top: solid 1px rgba(255,255,255,0.15)">
       <p style="margin: 0;line-height: 30px">温度（°C）</p>
       <canvas id="cbc" height="20px"></canvas>
     </div>
