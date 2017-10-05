@@ -36,7 +36,6 @@ function buildData(response) {
 }
 
 var windLayer = null, bgLayer = null;
-var resourcePath = '/backup/demo/data/';
 
 function requestWind(map, time) {
   var counter = 0;
@@ -56,18 +55,21 @@ function requestWind(map, time) {
     }
   }
 
-  µ.getBinary(resourcePath + time + '.WU', function (response) {
+  var _resourcePath = processResourcePath('TEMP');
+
+  µ.getBinary(_resourcePath + time + '.WU', function (response) {
     uData = buildData(response);
     checkAndCombineData();
   });
-  µ.getBinary(resourcePath + time + '.WV', function (response) {
+  µ.getBinary(_resourcePath + time + '.WV', function (response) {
     vData = buildData(response);
     checkAndCombineData();
   });
 }
 
 function requestBackgroundData(map, time, product, type) {
-  µ.getBinary(resourcePath + time + '.' + type, function (response) {
+  var _resourcePath = processResourcePath(type);
+  µ.getBinary(_resourcePath + time + '.' + type, function (response) {
     var data = buildData(response);
     if (bgLayer === null) {
       bgLayer = L.distributionOverlay({opacity: 1}, product, data).addTo(map);
@@ -96,6 +98,8 @@ function resize() {
 
 var tl, currentTime;
 
+var PRODUCT_TYPE_WEATHER = 'weather', PRODUCT_TYPE_AQ = 'aq';
+
 function initOptions() {
   var _products = {};
   for (var key in CONFIG.PRODUCTS) {
@@ -105,50 +109,96 @@ function initOptions() {
     }
     v.key = key;
     v.product = products.productsFor(key);
-    _products[v['type']] += '<input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="' + v.name + '" product="' + key + '"/>';
+    _products[v['type']] += '<input class="to-labelauty synch-icon" type="radio" name="rd1" data-labelauty="' + v.name + '" product="' + key + '"' + (CONFIG.selected === key ? ' checked' : '') + '/>';
   }
-  var weather = 'weather', aq = 'aq';
-  $('#' + weather).html(_products[weather]);
-  $('#' + aq).html(_products[aq]);
+  $('#' + PRODUCT_TYPE_WEATHER).html(_products[PRODUCT_TYPE_WEATHER]);
+  $('#' + PRODUCT_TYPE_AQ).html(_products[PRODUCT_TYPE_AQ]);
 }
 
 var startTime = "2017/09/10 0:00:00", endTime = "2017/09/15 0:00:00";
-var days = 0, interval = 0, refTime;
+var days = 0, interval = 0, refTime, timeIndex = 0, selectedProduct;
 $(document).ready(function (e) {
   initOptions();
   resize();
   var map = initMap();
-  var type = CONFIG.selected;
-  var product = CONFIG.PRODUCTS[type].product;
-  cb = colorbar('cbc');
-  cb.draw(CONFIG.PRODUCTS.TEMP.colors);
-  µ.mapControl(map, 'timeline', 'bottomleft');
-  µ.mapControl(map, 'aqcontrol', 'topleft');
-  // $(":radio").labelauty();
-  $(".to-labelauty").labelauty({minimum_width: "35px"});
+  selectedProduct = CONFIG.selected;
+  var product = CONFIG.PRODUCTS[selectedProduct].product;
   // $(".to-labelauty-icon").labelauty({ label: false });
   $.getJSON(resourcePath + 'meta.json', function (response) {
-    resourcePath += response.latest + '/';
+    cb = colorbar('cbc');
+    cb.draw(CONFIG.PRODUCTS.TEMP.colors);
+    µ.mapControl(map, 'timeline', 'bottomleft');
+    µ.mapControl(map, 'aqcontrol', 'topleft');
+    // $(":radio").labelauty();
+    $(".to-labelauty").labelauty({minimum_width: "35px"});
+    // resourcePath += response.latest + '/';
     days = response.days;
     interval = response.intervalHour;
     refTime = response.refTime;
     parseTime(refTime, interval, days);
     tl = new timeline();
-    tl.init(startTime, endTime, function (time) {
-      currentTime = time === undefined ? '2017091102' : time;
-      requestWind(map, currentTime);
-      requestBackgroundData(map, currentTime, product, type);
-
+    tl.init(startTime, endTime, function (time, index) {
+      currentTime = time === undefined ? '2017091102' : µ.formatYYYYmmddHH(time);
+      if (needRequestData(index)) {
+        var _currentTime = processRequestTime(index);
+        requestWind(map, _currentTime);
+      }
+      if (needRequestData(index, selectedProduct)) {
+        var _currentTime = processRequestTime(index, selectedProduct);
+        requestBackgroundData(map, _currentTime, product, selectedProduct);
+      }
+      timeIndex = index;
     });
     $("input[name=rd1]").click(function (event) {
       var type = event.target.attributes.product.value;
       var product = CONFIG.PRODUCTS[type].product;
-      requestWind(map, currentTime);
-      requestBackgroundData(map, currentTime, product, type);
+      if (needRequestData(timeIndex)) {
+        var _currentTime = processRequestTime(timeIndex);
+        requestWind(map, _currentTime);
+      }
+      if (needRequestData(timeIndex, type)) {
+        var _currentTime = processRequestTime(timeIndex, type);
+        requestBackgroundData(map, _currentTime, product, type);
+      }
+      selectedProduct = type;
     });
   });
   // SetProgressTime(null, "2017/07/29 0:00:00", "2017/08/03 0:00:00");
 });
+
+function processResourcePath(productType) {
+  return resourcePath + productType + '/';
+}
+
+function processRequestTime(index, productKey) {
+  index = index === undefined ? 0 : index;
+  var v1 = Math.floor(index / interval);
+  if (selectedProduct === productKey || productKey === undefined) {
+    var v2 = Math.floor(timeIndex / interval);
+    if (v1 === v2) {
+      return currentTime;
+    }
+  }
+  var time = new Date();
+  var addOn = refTime + v1 * interval * 3600000;
+  // console.log(refTime, v1, interval, addOn,productKey)
+  time.setTime(addOn);
+  return µ.formatYYYYmmddHH(time);
+}
+
+function needRequestData(index, productKey) {
+  console.log(selectedProduct, productKey, timeIndex, index)
+  // index = index === undefined ? 0 : index;
+  timeIndex = timeIndex === undefined ? 0 : timeIndex;
+  if (selectedProduct === productKey && timeIndex === indecolox) {
+    return false;
+  }
+  var _product = productKey === undefined ? CONFIG.PRODUCTS.TEMP : CONFIG.PRODUCTS[productKey];
+  if (_product.type === PRODUCT_TYPE_WEATHER && (selectedProduct === productKey || productKey === undefined)) {
+    return index === undefined || (Math.floor(timeIndex / interval) !== Math.floor(index / interval) || index % interval === 0);
+  }
+  return true;
+}
 
 function parseTime(time, interval, days) {
   var date = new Date();

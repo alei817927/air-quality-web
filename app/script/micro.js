@@ -104,6 +104,7 @@ var µ = function () {
     L.DomEvent.on(container, 'mousewheel', L.DomEvent.stopPropagation);
     return cl;
   }
+
   function location(map, onerr) {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function (position) {
@@ -113,7 +114,7 @@ var µ = function () {
       }, function (error) {
         console.error("浏览器不支持地理定位。", error);
         onerr(map);
-      },{
+      }, {
         enableHighAccuracy: true,
         timeout: 1000,
         maximumAge: 0
@@ -124,6 +125,15 @@ var µ = function () {
   function round(value, fixed) {
     var m = Math.pow(10, fixed);
     return Math.round(value * m) / m;
+  }
+
+  function formatYYYYmmddHH(time) {
+    var year = time.getFullYear();
+    var month = time.getMonth() + 1;
+    month = month < 10 ? '0' + month : month;
+    var currDate = (time.getDate() < 10 ? '0' : '') + time.getDate();
+    var hours = (time.getHours() < 10 ? '0' : '') + time.getHours();
+    return year + '' + month + currDate + hours;
   }
 
   return {
@@ -138,6 +148,7 @@ var µ = function () {
     getBinary: getBinary,
     mapControl: mapControl,
     location: location,
-    round:round
+    round: round,
+    formatYYYYmmddHH: formatYYYYmmddHH
   };
 }();

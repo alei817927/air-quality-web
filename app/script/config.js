@@ -57,3 +57,4 @@ var CONFIG = {
   },
   selected: 'TEMP'
 };
+var resourcePath = '/backup/demo/data/';

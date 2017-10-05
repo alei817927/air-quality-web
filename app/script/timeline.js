@@ -18,7 +18,7 @@ var timeline = function () {
     this.originStartTime = new Date(startTime);
     this.originEndTime = new Date(endTime);
     var start = _formatTime(this.originStartTime);
-    console.log(this.originStartTime,this.originEndTime,start)
+    console.log(this.originStartTime, this.originEndTime, start)
     $("#scroll_Thumb").html(start[1]);
     $(".timecode").html(start[2]);
 
@@ -93,19 +93,9 @@ var timeline = function () {
       $(".timecode").hide();
     });
     $(".box").show();
-    this.callback();
+    this.callback(this.originStartTime);
   };
 
-  function _formatYYYYmmddHH(date) {
-    var year = date.getFullYear();
-    var month = date.getMonth() + 1;
-    if (month < 10) {
-      month = '0' + month;
-    }
-    var currDate = _pad(date.getDate());
-    var hours = _pad(date.getHours());
-    return year + '' + month + currDate + hours;
-  }
 
   this.setSlideBarTime = function () {
     var startDate = new Date(this.originStartTime);
@@ -119,7 +109,7 @@ var timeline = function () {
     var week = weekArray[new Date(startDate).getDay()];
     var indexStart1 = week + "  " + currentDate + " - " + Hours + ":" + Minutes;
     $("#scroll_Thumb").html(indexStart1);
-    this.callback(_formatYYYYmmddHH(startDate));
+    this.callback(startDate, this.value);
   };
 
   this.setValue = function () {
