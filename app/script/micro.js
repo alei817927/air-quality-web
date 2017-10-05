@@ -104,7 +104,6 @@ var µ = function () {
     L.DomEvent.on(container, 'mousewheel', L.DomEvent.stopPropagation);
     return cl;
   }
-
   function location(map, onerr) {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function (position) {
@@ -114,6 +113,10 @@ var µ = function () {
       }, function (error) {
         console.error("浏览器不支持地理定位。", error);
         onerr(map);
+      },{
+        enableHighAccuracy: true,
+        timeout: 1000,
+        maximumAge: 0
       });
     }
   }

@@ -1,10 +1,9 @@
 window.Windy = function Windy(params) {
-  var VELOCITY_SCALE = 0.005 * (Math.pow(window.devicePixelRatio, 1 / 3) || 1); // scale for wind velocity (completely arbitrary--this value looks nice)
-  var MIN_TEMPERATURE_K = 261.15; // step size of particle intensity color scale
-  var MAX_TEMPERATURE_K = 317.15; // wind velocity at which particle intensity is maximum (m/s)
+  // var VELOCITY_SCALE = 0.008 * (Math.pow(window.devicePixelRatio, 1 / 3) || 1); // scale for wind velocity (completely arbitrary--this value looks nice)
+  var VELOCITY_SCALE = 0.01;
   var MAX_PARTICLE_AGE = 90; // max number of frames a particle is drawn before regeneration
   var PARTICLE_LINE_WIDTH = 1; // line width of a drawn particle
-  var PARTICLE_MULTIPLIER = 1 / 1000; // particle count scalar (completely arbitrary--this values looks nice)
+  var PARTICLE_MULTIPLIER = 1 / 700; // particle count scalar (completely arbitrary--this values looks nice)
   // var PARTICLE_REDUCTION = Math.pow(window.devicePixelRatio, 1 / 3) || 1.6; // multiply particle count for mobiles by this amount
   var PARTICLE_REDUCTION = 0.3;
   var FRAME_RATE = 25,

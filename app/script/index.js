@@ -49,15 +49,18 @@ function requestWind(map, time) {
         windLayer = L.windOverlay(data, {}).addTo(map);
       } else {
         windLayer.setData(data);
+        console.log('checkAndCombineData');
       }
+      uData = null;
+      vData = null;
     }
   }
 
-  µ.getBinary(resourcePath + time + '.wu', function (response) {
+  µ.getBinary(resourcePath + time + '.WU', function (response) {
     uData = buildData(response);
     checkAndCombineData();
   });
-  µ.getBinary(resourcePath + time + '.wv', function (response) {
+  µ.getBinary(resourcePath + time + '.WV', function (response) {
     vData = buildData(response);
     checkAndCombineData();
   });
@@ -109,6 +112,8 @@ function initOptions() {
   $('#' + aq).html(_products[aq]);
 }
 
+var startTime = "2017/09/10 0:00:00", endTime = "2017/09/15 0:00:00";
+var days = 0, interval = 0, refTime;
 $(document).ready(function (e) {
   initOptions();
   resize();
@@ -122,21 +127,39 @@ $(document).ready(function (e) {
   // $(":radio").labelauty();
   $(".to-labelauty").labelauty({minimum_width: "35px"});
   // $(".to-labelauty-icon").labelauty({ label: false });
-  var startTime = "2017/09/10 0:00:00", endTime = "2017/09/15 0:00:00";
-  tl = new timeline();
-  tl.init(startTime, endTime, function (time) {
-    currentTime = time === undefined ? '2017091102' : time;
-    requestWind(map, currentTime);
-    requestBackgroundData(map, currentTime, product, type);
+  $.getJSON(resourcePath + 'meta.json', function (response) {
+    resourcePath += response.latest + '/';
+    days = response.days;
+    interval = response.intervalHour;
+    refTime = response.refTime;
+    parseTime(refTime, interval, days);
+    tl = new timeline();
+    tl.init(startTime, endTime, function (time) {
+      currentTime = time === undefined ? '2017091102' : time;
+      requestWind(map, currentTime);
+      requestBackgroundData(map, currentTime, product, type);
 
-  });
-  $("input[name=rd1]").click(function (event) {
-    var type = event.target.attributes.product.value;
-    var product = CONFIG.PRODUCTS[type].product;
-    requestBackgroundData(map, currentTime, product, type);
+    });
+    $("input[name=rd1]").click(function (event) {
+      var type = event.target.attributes.product.value;
+      var product = CONFIG.PRODUCTS[type].product;
+      requestWind(map, currentTime);
+      requestBackgroundData(map, currentTime, product, type);
+    });
   });
   // SetProgressTime(null, "2017/07/29 0:00:00", "2017/08/03 0:00:00");
 });
+
+function parseTime(time, interval, days) {
+  var date = new Date();
+  date.setTime(time);
+  startTime = date.toString();
+  time += days * 86400000;
+  date.setTime(time);
+  endTime = date.toString();
+  console.log(days, interval)
+}
+
 $(window).resize(function () {
   resize();
 });

@@ -18,6 +18,7 @@ var timeline = function () {
     this.originStartTime = new Date(startTime);
     this.originEndTime = new Date(endTime);
     var start = _formatTime(this.originStartTime);
+    console.log(this.originStartTime,this.originEndTime,start)
     $("#scroll_Thumb").html(start[1]);
     $(".timecode").html(start[2]);
 
