@@ -30,6 +30,7 @@ var µ = function () {
     }
 
     return function (point, alpha) {
+      // console.log(points, 'vvvvvvvvvvvvvv')
       var i;
       for (i = 0; i < points.length - 1; i++) {
         if (point <= points[i]) {
@@ -136,6 +137,52 @@ var µ = function () {
     return year + '' + month + currDate + hours;
   }
 
+  function buildWeatherData(originData) {
+    var dataView = new DataView(originData);
+    var data = {header: {}, data: []};
+    var keys = ["nx", "ny", "lo1", "la1", "lo2", "la2", "dx", "dy", "parameterCategory", "parameterNumber"];
+    var index = 0;
+    for (var i = 0; i < keys.length; i++, index += 4) {
+      data.header[keys[i]] = dataView.getFloat32(index, false);
+    }
+    for (var i = 0; index < dataView.byteLength; index += 4, i++) {
+      data.data[i] = dataView.getFloat32(index, false);
+    }
+    return data;
+  }
+
+  function buildAqData(originData) {
+    var dataView = new DataView(originData);
+    var keys = ["x0", "y0", "xcell", "ycell", "row", "col", "x1", "y1"];
+    var index = 0;
+    var header = {};
+    for (var i = 0; i < keys.length; i++, index += 4) {
+      header[keys[i]] = dataView.getFloat32(index, false);
+    }
+    var data = {header: {}, data: []};
+    var projsrc = '+proj=lcc +lat_1=20 +lat_2=50 +lat_0=35 +lon_0=110 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs';
+    var projdst = 'EPSG:4326';
+    // var transform = proj4(projsrc, projdst);
+    var transform = proj4(projsrc);
+    var ll0 = transform.inverse([header.x0, header.y0]);
+    var ll1 = transform.inverse([header.x1, header.y1]);
+    data.header.lo1 = ll0[0];
+    data.header.la1 = ll0[1];
+    data.header.lo2 = ll1[0];
+    data.header.la2 = ll1[1];
+    data.header.ny = header.row;
+    data.header.nx = header.col;
+    data.header.dx = (data.header.lo2 - data.header.lo1) / header.col;
+    data.header.dy = (data.header.la1-data.header.la2) / header.row;
+    console.log(header)
+    console.log(data.header)
+    console.log(ll0,ll1,'----')
+    for (var i = 0; index < dataView.byteLength; index += 4, i++) {
+      data.data[i] = dataView.getFloat32(index, false);
+    }
+    return data;
+  }
+
   return {
     isMobile: isMobile,
     isValue: isValue,
@@ -149,6 +196,8 @@ var µ = function () {
     mapControl: mapControl,
     location: location,
     round: round,
-    formatYYYYmmddHH: formatYYYYmmddHH
+    formatYYYYmmddHH: formatYYYYmmddHH,
+    buildWeatherData: buildWeatherData,
+    buildAqData: buildAqData
   };
 }();

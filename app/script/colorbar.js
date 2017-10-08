@@ -4,7 +4,10 @@ var colorbar = function (id) {
   var canvas = document.getElementById(id);
   var ctx = canvas.getContext("2d");
   return {
-    draw: function (colors) {
+    draw: function (product) {
+      var colors=product.colors;
+      var vdiff=product.vdiff;
+      if (colors === undefined || colors.length < 2) return;
       var my_gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
       var factor = 1 / (colors.length - 1);
       var i = 0;
@@ -22,7 +25,7 @@ var colorbar = function (id) {
       ctx.font = "10px Verdana";
       for (i = 0; i < colors.length; i++) {
         var x = canvas.width * i * factor;
-        var value = µ.round(colors[i][0] - 273.15, 1);
+        var value = µ.round(colors[i][0] - vdiff, 1);
         ctx.fillText(value, x, 15);
         // console.log(i, x, value, c.width)
       }

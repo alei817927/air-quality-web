@@ -60,10 +60,10 @@ L.WindOverlay = L.Layer.extend({
   drawLayer: function drawLayer() {
     var size = this._map.getSize();
     var bounds = this._map.getBounds();
-    var self=this._windy;
+    var self = this._windy;
     setTimeout(function () {
       self.start([[0, 0], [size.x, size.y]], size.x, size.y, [[bounds._southWest.lng, bounds._southWest.lat], [bounds._northEast.lng, bounds._northEast.lat]]);
-    },1000);
+    }, 1000);
   },
   // -- L.DomUtil.setTransform from leaflet 1.0.0 to work on 0.0.7
   _setTransform: function _setTransform(el, offset, scale) {
@@ -83,6 +83,20 @@ L.WindOverlay = L.Layer.extend({
     this._data = data;
     this._windy.update(this._data);
     this.drawLayer();
+  },
+  interpolate: function (lon, lat) {
+    return this._windy.interpolatePoint(lon, lat);
+  },
+  vectorToDegrees: function vectorToDegrees(uMs, vMs) {
+    var windAbs = Math.sqrt(Math.pow(uMs, 2) + Math.pow(vMs, 2));
+    var windDirTrigTo = Math.atan2(uMs / windAbs, vMs / windAbs);
+    var windDirTrigToDegrees = windDirTrigTo * 180 / Math.PI;
+    var windDirTrigFromDegrees = windDirTrigToDegrees + 180;
+    return windDirTrigFromDegrees.toFixed(3);
+  },
+  vectorToSpeed: function vectorToSpeed(uMs, vMs) {
+    var windAbs = Math.sqrt(Math.pow(uMs, 2) + Math.pow(vMs, 2));
+    return windAbs;
   }
 
   // _clearWind: function _clearWind() {

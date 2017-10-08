@@ -141,10 +141,14 @@ L.DistributionOverlay = L.Layer.extend({
     var canvas = this._canvas;
     L.DomUtil.setOpacity(canvas, this.options.opacity);
   },
-  setData: function (data) {
+  setData: function (product, data) {
     this._data = data;
+    this._product = product;
     this._builder = this._product.build(this._data);
     this._draw();
+  },
+  interpolate: function (lng, lat) {
+    return this._builder.interpolate(lng, lat);
   }
 
 });

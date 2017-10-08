@@ -97,7 +97,7 @@ var timeline = function () {
   };
 
 
-  this.setSlideBarTime = function () {
+  this.setSlideBarTime = function (autoPlay) {
     var startDate = new Date(this.originStartTime);
     startDate.setHours(startDate.getHours() + this.value);//十五分钟为进度
     var month = startDate.getMonth() + 1 < 10 ? "0" + (startDate.getMonth() + 1) : startDate.getMonth() + 1;
@@ -109,7 +109,10 @@ var timeline = function () {
     var week = weekArray[new Date(startDate).getDay()];
     var indexStart1 = week + "  " + currentDate + " - " + Hours + ":" + Minutes;
     $("#scroll_Thumb").html(indexStart1);
-    this.callback(startDate, this.value);
+    var self = this;
+    setTimeout(function () {
+      self.callback(startDate, self.value,autoPlay);
+    });
   };
 
   this.setValue = function () {
@@ -138,26 +141,28 @@ var timeline = function () {
       imgObj.attr("title", "暂停");
       imgObj.css("background-image", "url(/app/images/pause.png)");
       var self = this;
-      _mProgressTimer = window.setInterval(function () {
-        // console.log(self.value, self.maxValue);
-        if (self.value < self.maxValue) {
-          self.value += 1;
-          self.setValue();
-          self.setSlideBarTime()
-        } else {
-          stopAuto(imgObj);
-          self.value = 0;
-          self.setValue();
-          window.clearInterval(_mProgressTimer);
-        }
-      }, _speed);
+      this.autoPlay(imgObj);
+    }
+  };
+  this.autoPlay = function (imgObj) {
+    if (this.value < this.maxValue) {
+      this.value += 1;
+      this.setValue();
+      var self = this;
+      this.setSlideBarTime(function () {
+        _mProgressTimer = window.setTimeout(function () {
+          self.autoPlay(imgObj);
+        }, _speed);
+      });
+    } else {
+      stopAuto(imgObj);
     }
   };
 
   function stopAuto(imgObj) {
     imgObj.attr("title", "开始");
     imgObj.css("background-image", "url(/app/images/play.png)");
-    window.clearInterval(_mProgressTimer);
+    window.clearTimeout(_mProgressTimer);
   }
 
   function _getDateDiff(d1, d2) {

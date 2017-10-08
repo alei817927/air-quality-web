@@ -14,11 +14,8 @@ var products = function () {
 
   var FACTORIES = {
     "TEMP": {
-      matches: _.matches({param: "wind", overlayType: "temp"}),
       create: function (attr) {
         return buildProduct({
-          field: "scalar",
-          type: "temp",
           builder: function (record) {
             // console.log(file)
             var data = record.data;
@@ -30,18 +27,28 @@ var products = function () {
               }
             }
           },
-          units: [
-            {
-              label: "°C",
-              conversion: function (x) {
-                return x - 273.15;
-              },
-              precision: 1
-            }
-          ],
           scale: {
-            bounds: [193, 328],
             gradient: µ.segmentedColorScale(CONFIG.PRODUCTS.TEMP.colors)
+          }
+        });
+      }
+    },
+    "PM25": {
+      create: function (attr) {
+        return buildProduct({
+          builder: function (record) {
+            // console.log(file)
+            var data = record.data;
+            return {
+              header: record.header,
+              interpolate: bilinearInterpolateScalar,
+              data: function (i) {
+                return data[i];
+              }
+            }
+          },
+          scale: {
+            gradient: µ.segmentedColorScale(CONFIG.PRODUCTS.PM25.colors)
           }
         });
       }
@@ -59,6 +66,7 @@ var products = function () {
   }
 
   function bilinearInterpolateScalar(x, y, g00, g10, g01, g11) {
+    // console.log((x, y, g00, g10, g01, g11), '---------')
     var rx = (1 - x);
     var ry = (1 - y);
     return g00 * rx * ry + g10 * x * ry + g01 * rx * y + g11 * x * y;
@@ -76,11 +84,9 @@ var products = function () {
 
   function buildGrid(builder) {
     var header = builder.header;
-    var λ0 = header.lo1, φ0 = header.la1;  // the grid's origin (e.g., 0.0E, 90.0N)
+    var λ0 = header.lo1, φ0 = header.la1;  // the grid's origin (e.g., 0.0E, 90.0N),左上角
     var Δλ = header.dx, Δφ = header.dy;    // distance between grid points (e.g., 2.5 deg lon, 2.5 deg lat)
     var ni = header.nx, nj = header.ny;    // number of grid points W-E and N-S (e.g., 144 x 73)
-    var date = new Date(header.refTime);
-    date.setHours(date.getHours() + header.forecastTime);
 
     var grid = [], p = 0;
     var isContinuous = Math.floor(ni * Δλ) >= 360;
@@ -95,17 +101,22 @@ var products = function () {
       grid[j] = row;
     }
 
-    console.log('buildGrid')
+    console.log('buildGrid',Δφ,Δλ,λ0,φ0,grid.length,grid[0].length)
 
     function interpolate(λ, φ) {
       var i = µ.floorMod(λ - λ0, 360) / Δλ;  // calculate longitude index in wrapped range [0, 360)
       var j = (φ0 - φ) / Δφ;                 // calculate latitude index in direction +90 to -90
-
-      if (j < 0) console.error('j invalid', j);
-      if (i < 0) console.error('i invalid', i);
-
+      // if (j < 0) console.error('j invalid', j);
+      // if (i < 0) console.error('i invalid', i);
+      // if (i < 0 || j < 0) {
+      //   return null;
+      // }
       var fi = Math.floor(i), ci = fi + 1;
       var fj = Math.floor(j), cj = fj + 1;
+      if (i < 0 || j < 0) {
+        return null;
+      }
+      // if(Δφ!==1&&Δλ!==1) console.log(λ , λ0,Δλ,i,';',φ0 ,φ,Δφ,j,';',fi,fj,'~~~');
 
       var row;
       if ((row = grid[fj])) {
@@ -124,7 +135,6 @@ var products = function () {
     }
 
     return {
-      date: date,
       interpolate: interpolate,
       forEachPoint: function (cb) {
         for (var j = 0; j < nj; j++) {
