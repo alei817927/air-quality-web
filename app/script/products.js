@@ -4,9 +4,10 @@ var products = function () {
   function buildProduct(overrides) {
     return _.extend({
       date: null,
-      build: function (data) {
+      build: function (data, type) {
         var me = this;
         var _builder = me.builder(data);
+        // if (type === 'aq') return buildAqGrid(_builder);
         return buildGrid(_builder);
       }
     }, overrides);
@@ -82,6 +83,65 @@ var products = function () {
   }
 
 
+  function buildProjection(header) {
+    return '+proj=lcc +lat_1=' + header.palp
+      + ' +lat_2=' + header.pbet
+      + ' +lat_0=' + header.ycent
+      + ' +lon_0=' + header.xcent
+      + ' +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs';
+  }
+
+  function buildAqGrid(builder) {
+    var header = builder.header;
+    var col = header.col, row = header.row;    // number of grid points W-E and N-S (e.g., 144 x 73)
+    var points = [], p = 0;
+    var projection = buildProjection(header);
+    console.log(projection)
+    var transform = proj4(projection);
+    var min, max;
+    for (var r = 0; r < row; r++) {
+      for (var c = 0; c < col; c++, p++) {
+        //var keys = ['x0', 'y0', 'xcell', 'ycell', 'row', 'col', 'x1', 'y1', 'xcent', 'ycent', 'palp', 'pbet'];
+        var llp = transform.inverse([header.x0 + header.xcell * c, header.y0 + header.ycell * r]);
+        if (p === 0) {
+          min = {x: llp[0], y: llp[1]};
+          max = {x: llp[0], y: llp[1]};
+          console.log('=', min, max)
+        } else {
+          max.x = max.x < llp[0] ? llp[0] : max.x;
+          max.y = max.y < llp[1] ? llp[1] : max.y;
+          min.x = min.x > llp[0] ? llp[0] : min.x;
+          min.y = min.y > llp[1] ? llp[1] : min.y;
+        }
+        points.push({x: llp[0], y: llp[1], i: p, d: builder.data(p)});
+      }
+    }
+    var tree = new kdTree(points, function distance(a, b) {
+      var dx = a.x - b.x;
+      var dy = a.y - b.y;
+      return dx * dx + dy * dy;
+    }, ['x', 'y']);
+
+    console.log(points.length, max, min, '-----------;;;;;;;;')
+
+    function interpolate(lng, lat) {
+      if ((lng > max.x || lat > max.y) || (lng < min.x || lat < min.y)) {
+        return 0;
+      }
+      var nearest = tree.nearest({x: lng, y: lat}, 1);
+      // var p1 = nearest[0][0];
+      // var p2 = nearest[1][0];
+      // var p3 = nearest[2][0];
+      // var p4 = nearest[3][0];
+      // console.log(p1,p2,p3,p4)
+      return nearest[0][0].d;
+    }
+
+    return {
+      interpolate: interpolate
+    };
+  }
+
   function buildGrid(builder) {
     var header = builder.header;
     var λ0 = header.lo1, φ0 = header.la1;  // the grid's origin (e.g., 0.0E, 90.0N),左上角
@@ -101,12 +161,16 @@ var products = function () {
       grid[j] = row;
     }
 
-    console.log('buildGrid',Δφ,Δλ,λ0,φ0,grid.length,grid[0].length)
+    // console.log('buildGrid', Δφ, Δλ, λ0, φ0, grid.length, grid[0].length)
+    console.log('buildGrid', header)
 
     function interpolate(λ, φ) {
+      if (header.la1 < φ || header.lo1 > λ || header.lo2 < λ || header.la2 > φ) {
+        return 0;
+      }
       var i = µ.floorMod(λ - λ0, 360) / Δλ;  // calculate longitude index in wrapped range [0, 360)
       var j = (φ0 - φ) / Δφ;                 // calculate latitude index in direction +90 to -90
-      // if (j < 0) console.error('j invalid', j);
+      if (j < 0) console.error('j invalid', j,φ0,φ,Δφ);
       // if (i < 0) console.error('i invalid', i);
       // if (i < 0 || j < 0) {
       //   return null;
@@ -127,7 +191,9 @@ var products = function () {
           var g11 = row[ci];
           if (µ.isValue(g01) && µ.isValue(g11)) {
             // All four points found, so interpolate the value.
-            return builder.interpolate(i - fi, j - fj, g00, g10, g01, g11);
+            var value= builder.interpolate(i - fi, j - fj, g00, g10, g01, g11);
+            // console.error(λ, φ,value);
+            return value;
           }
         }
       }

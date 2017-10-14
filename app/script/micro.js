@@ -140,7 +140,7 @@ var µ = function () {
   function buildWeatherData(originData) {
     var dataView = new DataView(originData);
     var data = {header: {}, data: []};
-    var keys = ["nx", "ny", "lo1", "la1", "lo2", "la2", "dx", "dy", "parameterCategory", "parameterNumber"];
+    var keys = ['nx', 'ny', 'lo1', 'la1', 'lo2', 'la2', 'dx', 'dy', 'parameterCategory', 'parameterNumber'];
     var index = 0;
     for (var i = 0; i < keys.length; i++, index += 4) {
       data.header[keys[i]] = dataView.getFloat32(index, false);
@@ -153,7 +153,21 @@ var µ = function () {
 
   function buildAqData(originData) {
     var dataView = new DataView(originData);
-    var keys = ["x0", "y0", "xcell", "ycell", "row", "col", "x1", "y1"];
+    var keys = ['x0', 'y0', 'xcell', 'ycell', 'row', 'col', 'x1', 'y1', 'xcent', 'ycent', 'palp', 'pbet'];
+    var index = 0;
+    var data = {header: {}, data: []};
+    for (var i = 0; i < keys.length; i++, index += 4) {
+      data.header[keys[i]] = dataView.getFloat32(index, false);
+    }
+    for (var i = 0; index < dataView.byteLength; index += 4, i++) {
+      data.data[i] = dataView.getFloat32(index, false);
+    }
+    return data;
+
+  }
+  function buildLambertData(originData) {
+    var dataView = new DataView(originData);
+    var keys = ['x0', 'y0', 'xcell', 'ycell', 'row', 'col', 'x1', 'y1', 'xcent', 'ycent', 'palp', 'pbet'];
     var index = 0;
     var header = {};
     for (var i = 0; i < keys.length; i++, index += 4) {

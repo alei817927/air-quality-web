@@ -24,9 +24,10 @@ L.DistributionOverlay = L.Layer.extend({
   options: {
     opacity: 1
   },
-  initialize: function (options, product, data, colorKeys) {
+  initialize: function (options, product, data, colorKeys,type) {
     L.setOptions(this, options);
     this._product = product;
+    this._productType = type;
     this._data = data;
     this._colorKeys = colorKeys;
   },
@@ -47,7 +48,7 @@ L.DistributionOverlay = L.Layer.extend({
     // L.DomUtil.addClass(this._canvas, 'leaflet-zoom-' + (animated ? 'animated' : 'hide'));
 
     // console.log(product);
-    this._builder = this._product.build(this._data);
+    this._builder = this._product.build(this._data,this._productType);
     this._draw();
     this._updateOpacity();
   },
@@ -103,6 +104,8 @@ L.DistributionOverlay = L.Layer.extend({
     var imgData = ctx.createImageData(viewWidth, viewHeight);
     // var imgData = ctx.getImageData(0, 0, viewWidth, viewHeight);
 
+    // var scalar = this._builder.interpolate(81.33220987136266, 11.08163278839247);
+    // console.log(scalar,'==;;==')
     for (var row = 0; row < viewHeight; row++) {
       for (var col = 0; col < viewWidth; col++) {
         var point = L.point(col, row);
@@ -119,6 +122,10 @@ L.DistributionOverlay = L.Layer.extend({
           imgData.data[imgDataIndex + 1] = color[1];
           imgData.data[imgDataIndex + 2] = color[2];
           imgData.data[imgDataIndex + 3] = color[3];
+          // if(col>10)return
+          // else {
+          //   console.log(row,col,λ, φ,scalar,'==;;==')
+          // }
         } else {
           console.error('----------------')
         }
@@ -141,10 +148,12 @@ L.DistributionOverlay = L.Layer.extend({
     var canvas = this._canvas;
     L.DomUtil.setOpacity(canvas, this.options.opacity);
   },
-  setData: function (product, data) {
+  setData: function (product, data,type) {
     this._data = data;
     this._product = product;
-    this._builder = this._product.build(this._data);
+    // this._builder = this._product.build(this._data);
+    this._productType = type;
+    this._builder = this._product.build(this._data,this._productType);
     this._draw();
   },
   interpolate: function (lng, lat) {

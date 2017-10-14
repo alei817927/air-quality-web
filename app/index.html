@@ -82,6 +82,11 @@
 
 <script src="script/lib/underscore.js/1.6.0/underscore.js"></script>
 <script src="script/lib/jquery-labelauty/jquery-labelauty.js"></script>
+<script src="script/lib/kdTree-1.01/kdTree.js"></script>
+
+<!--<script src="script/lib/rbush-2.0.1/rbush.js"></script>-->
+<!--<script src="script/lib/rbush-knn-2.0.0/rbush-knn.js"></script>-->
+
 
 <script src="script/config.js"></script>
 <script src="script/colorbar.js"></script>
@@ -95,7 +100,17 @@
 <script src="script/leaflet/DistributionOverlay.js"></script>
 <!--<script src="script/leaflet/DistributionOverlay.js"></script>-->
 <script src="script/leaflet/TileLayer.Grayscale.js"></script>
+<script src="script/leaflet/Proj4.js"></script>
 <script src="script/index.js"></script>
-
+<script>
+//  var projection = '+proj=lcc +lat_1= 20.0 +lat_2=50.0 +lat_0=35.0 +lon_0=110.0 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs';
+//  var transform = proj4(projection);
+//  var arr = [[-2133000.0, -1849500.0],[-2133000.0, 1849500.0],[2133000.0, 1849500.0],[2133000.0, -1849500.0]];
+//  for(var i=0;i<arr.length;i++){
+//    var v=arr[i];
+//    var n=transform.inverse(v);
+//    console.log(v,n);
+//  }
+</script>
 </body>
 </html>

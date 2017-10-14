@@ -2,7 +2,13 @@ var map;
 var tl, currentTime;
 
 var PRODUCT_TYPE_WEATHER = 'weather', PRODUCT_TYPE_AQ = 'aq';
-
+var crs = new L.Proj.CRS('EPSG:25833', '+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs', {
+    resolutions: [21674.7100160867, 10837.35500804335, 5418.677504021675, 2709.3387520108377, 1354.6693760054188, 677.3346880027094,
+      338.6673440013547, 169.33367200067735, 84.66683600033868, 42.33341800016934, 21.16670900008467, 10.583354500042335,
+      5.291677250021167, 2.6458386250105836, 1.3229193125052918, 0.6614596562526459, 0.33072982812632296, 0.16536491406316148],
+    origin: [-2500000, 9045984]
+  }
+);
 function initMap() {
   var Esri_WorldImagery = L.tileLayer.grayscale('http://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {
     attribution: '',
@@ -20,7 +26,7 @@ function initMap() {
   map.attributionControl.setPrefix(false);
 
   µ.location(map, function (map) {
-    map.setView([34.53, 104.7], µ.isMobile() ? 3 : 5);
+    map.setView([34.53, 104.7], µ.isMobile() ? 3 : 4);
   });
   // return map;
 }
@@ -69,18 +75,20 @@ function requestWind(map, time) {
 }
 
 function requestBackgroundData(map, time, product, type) {
+  return
   var _resourcePath = processResourcePath(type);
   µ.getBinary(_resourcePath + time + '.' + type, function (response) {
     var productType = CONFIG.PRODUCTS[type].type;
     if (productType === PRODUCT_TYPE_AQ) {
-      bgData = µ.buildAqData(response);
+      // bgData = µ.buildAqData(response);
+      bgData = µ.buildWeatherData(response);
     } else if (productType === PRODUCT_TYPE_WEATHER) {
       bgData = µ.buildWeatherData(response);
     }
     if (bgLayer === null) {
-      bgLayer = L.distributionOverlay({opacity: 1}, product, bgData).addTo(map);
+      bgLayer = L.distributionOverlay({opacity: 1}, product, bgData,productType).addTo(map);
     } else {
-      bgLayer.setData(product, bgData);
+      bgLayer.setData(product, bgData,productType);
     }
     checkAndProcessPopup();
   });
